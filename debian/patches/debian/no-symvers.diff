@@ -1,0 +1,33 @@
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH] Disable symbol versioning
+
+libnl3 after 3.2.21 enabled symbol versioning [0] without increasing the
+soname of the library, producing issues with our symbol lists.
+
+Until we hit a regular soname bump, it might be easiest to keep symbol
+versioning disabled.
+
+
+[0] https://github.com/thom311/libnl/commit/0eb665c693ab2673b722ffd75df744f75fb7e2fe
+---
+ lib/Makefile.am | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/lib/Makefile.am b/lib/Makefile.am
+index a287909..1727767 100644
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -10,8 +10,9 @@ AM_CPPFLAGS  =			 	\
+ 	-DSYSCONFDIR=\"$(sysconfdir)/libnl-3\"
+ 
+ AM_LDFLAGS = \
+-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+-	-Wl,--version-script=$(top_builddir)/libnl.sym
++	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
++#	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
++#	-Wl,--version-script=$(top_builddir)/libnl.sym
+ 
+ lib_LTLIBRARIES = \
+ 	libnl-3.la libnl-genl-3.la libnl-route-3.la libnl-nf-3.la libnl-idiag-3.la
+-- 
+tg: (3cdf84b..) debian/no-symvers (depends on: upstream-dist debian/etc-libnl-3)

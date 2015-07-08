@@ -1,0 +1,57 @@
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH] add pkgconfig for libnl-idiag
+
+The pkgconfig file is included in the upstream git repository but is missing
+inclusion into the buildprocess. Most likely for this reason it is also not
+part of the source release.
+
+---
+ Makefile.am           |  1 +
+ configure.ac          |  1 +
+ libnl-idiag-3.0.pc.in | 12 ++++++++++++
+ 3 files changed, 14 insertions(+)
+
+diff --git a/Makefile.am b/Makefile.am
+index bc4266d..5a5e1c3 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -7,6 +7,7 @@ SUBDIRS = include lib man python tests
+ pkgconfig_DATA = libnl-3.0.pc \
+ 		 libnl-route-3.0.pc \
+ 		 libnl-genl-3.0.pc \
++		 libnl-idiag-3.0.pc \
+ 		 libnl-nf-3.0.pc
+ 
+ if ENABLE_CLI
+diff --git a/configure.ac b/configure.ac
+index bbe4e29..e782ee3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -122,6 +122,7 @@ libnl.sym
+ libnl-3.0.pc
+ libnl-route-3.0.pc
+ libnl-genl-3.0.pc
++libnl-idiag-3.0.pc
+ libnl-nf-3.0.pc
+ libnl-cli-3.0.pc
+ lib/Makefile
+diff --git a/libnl-idiag-3.0.pc.in b/libnl-idiag-3.0.pc.in
+new file mode 100644
+index 0000000..9ce5100
+--- /dev/null
++++ b/libnl-idiag-3.0.pc.in
+@@ -0,0 +1,12 @@
++prefix=@prefix@
++exec_prefix=@exec_prefix@
++libdir=@libdir@
++includedir=@includedir@
++
++Name: libnl-idiag
++Description: Netlink Inet Diag Family Library
++Version: @PACKAGE_VERSION@
++Requires: libnl-3.0
++Libs: -L${libdir} -lnl-idiag-@MAJ_VERSION@
++Cflags: -I${includedir}/libnl@MAJ_VERSION@
++
+-- 
+tg: (78abb19..) fixes/idiag-pkgconfig (depends on: upstream-dist)

@@ -1,0 +1,67 @@
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH] install into etc/libnl-3
+
+Prevent naming conflicts with libnl2 or later conffiles.
+
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+
+---
+ Makefile.am         | 2 +-
+ lib/Makefile.am     | 2 +-
+ src/Makefile.am     | 2 +-
+ src/lib/Makefile.am | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index bc4266d..4175929 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -15,7 +15,7 @@ pkgconfig_DATA += libnl-cli-3.0.pc
+ endif
+ 
+ 
+-pkgsysconfdir = ${sysconfdir}/libnl
++pkgsysconfdir = ${sysconfdir}/libnl-3
+ pkgsysconf_DATA = etc/pktloc etc/classid
+ 
+ EXTRA_DIST = \
+diff --git a/lib/Makefile.am b/lib/Makefile.am
+index 4a1e8d9..a287909 100644
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -7,7 +7,7 @@ AM_CPPFLAGS  =			 	\
+ 	-I${builddir}/route \
+ 	-I${builddir}/route/cls \
+ 	-D_GNU_SOURCE \
+-	-DSYSCONFDIR=\"$(sysconfdir)/libnl\"
++	-DSYSCONFDIR=\"$(sysconfdir)/libnl-3\"
+ 
+ AM_LDFLAGS = \
+ 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+diff --git a/src/Makefile.am b/src/Makefile.am
+index b2b7fc7..e3bda72 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -2,7 +2,7 @@
+ 
+ SUBDIRS = lib
+ 
+-AM_CPPFLAGS  = -I${top_srcdir}/include -I${top_builddir}/include -D_GNU_SOURCE -DSYSCONFDIR=\"$(sysconfdir)/libnl\"
++AM_CPPFLAGS  = -I${top_srcdir}/include -I${top_builddir}/include -D_GNU_SOURCE -DSYSCONFDIR=\"$(sysconfdir)/libnl-3\"
+ AM_CFLAGS = -Wall
+ 
+ LDADD = \
+diff --git a/src/lib/Makefile.am b/src/lib/Makefile.am
+index 5161115..b9547ca 100644
+--- a/src/lib/Makefile.am
++++ b/src/lib/Makefile.am
+@@ -1,6 +1,6 @@
+ # -*- Makefile -*-
+ 
+-AM_CPPFLAGS  = -I${top_srcdir}/include -I${top_builddir}/include -D_GNU_SOURCE -DPKGLIBDIR=\"$(pkglibdir)\" -DSYSCONFDIR=\"$(sysconfdir)\" -rdynamic
++AM_CPPFLAGS  = -I${top_srcdir}/include -I${top_builddir}/include -D_GNU_SOURCE -DPKGLIBDIR=\"$(pkglibdir)-3\" -DSYSCONFDIR=\"$(sysconfdir)\" -rdynamic
+ AM_CFLAGS = -Wall
+ AM_LDFLAGS = \
+ 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+-- 
+tg: (78abb19..) debian/etc-libnl-3 (depends on: upstream-dist)

@@ -1,0 +1,6 @@
+debian/etc-libnl-3.diff -p1
+debian/out-of-tree.diff -p1
+debian/no-symvers.diff -p1
+fixes/idiag-pkgconfig.diff -p1
+backports/5206c050504f8676a24854519b9c351470fb7cc6.diff -p1
+backports/dfd0a80ec845a800504fecb936c2b33d6918fc9c.diff -p1

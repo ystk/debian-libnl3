@@ -1,0 +1,51 @@
+From 5206c050504f8676a24854519b9c351470fb7cc6 Mon Sep 17 00:00:00 2001
+From: Thomas Haller <thaller@redhat.com>
+Date: Thu, 3 Apr 2014 18:09:51 +0200
+Subject: [PATCH] route/addr: only sent IFA_FLAGS when needed to workaround
+ picky older kernels
+
+Older kernels don't accept receiving unknown netlink attributes.
+See net/core/rtnetlink.c, rtnetlink_rcv_msg(). This was fixed by kernel
+commit 661d2967b3f1b34eeaa7e212e7b9bbe8ee072b59.
+
+As a workaround, only set the additional attributes, when the user
+provided flags that makes this necessary and useful.
+
+https://github.com/thom311/libnl/issues/56
+https://bugzilla.redhat.com/show_bug.cgi?id=1063885
+
+Based-on-patch-by: Pavel Kankovsky <peak@argo.troja.mff.cuni.cz>
+Acked-by: Thomas Graf <tgraf@suug.ch>
+Signed-off-by: Thomas Haller <thaller@redhat.com>
+---
+ lib/route/addr.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/lib/route/addr.c b/lib/route/addr.c
+index 97905f0..e6e91d2 100644
+--- a/lib/route/addr.c
++++ b/lib/route/addr.c
+@@ -598,7 +598,19 @@ static int build_addr_msg(struct rtnl_addr *tmpl, int cmd, int flags,
+ 		NLA_PUT(msg, IFA_CACHEINFO, sizeof(ca), &ca);
+ 	}
+ 
+-	NLA_PUT_U32(msg, IFA_FLAGS, tmpl->a_flags);
++	if (tmpl->a_flags & ~0xFF) {
++		/* only set the IFA_FLAGS attribute, if they actually contain additional
++		 * flags that are not already set to am.ifa_flags.
++		 *
++		 * Older kernels refuse RTM_NEWADDR and RTM_NEWROUTE messages with EINVAL
++		 * if they contain unknown netlink attributes. See net/core/rtnetlink.c, which
++		 * was fixed by kernel commit 661d2967b3f1b34eeaa7e212e7b9bbe8ee072b59.
++		 *
++		 * With this workaround, libnl will function correctly with older kernels,
++		 * unless there is a new libnl user that wants to set these flags. In this
++		 * case it's up to the user to workaround this issue. */
++		NLA_PUT_U32(msg, IFA_FLAGS, tmpl->a_flags);
++	}
+ 
+ 	*result = msg;
+ 	return 0;
+-- 
+1.9.1
+
